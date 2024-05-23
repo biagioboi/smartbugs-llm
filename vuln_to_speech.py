@@ -2,32 +2,32 @@ import json
 
 toprint_dataset = list()
 json_todump = list()
-with open('../vulnerabilities.json') as fp:
+with open('vulnerabilities.json') as fp:
     all_vuln = json.load(fp)
     for vuln_items in all_vuln:
         toprint_rel_dataset = dict()
-        question = "Find the vulnerability in the following smart contract and the associated line ```"
+        question = "Find the vulnerability in the following smart contract ```"
         look_at = vuln_items['path']
         indexes = ""
         vulns_line = ""
         cat = ""
         for row_vuln in vuln_items['vulnerabilities']:
-            fp_vuln = open("../" + look_at)
+            fp_vuln = open(look_at)
             cat = row_vuln['category']
             all_lines = ""
             for i, line in enumerate(fp_vuln):
                 j = i + 1
                 if line.startswith("/*") or line.startswith(" *") or line.startswith(" */"):
                     continue
-                all_lines += line.strip()
+                all_lines += line
                 if j in row_vuln['lines']:
                     indexes += str(i) + ", "
-                    vulns_line += line.strip() + " "
+                    vulns_line += line + " "
         indexes = indexes[:-2]
         question += all_lines + "``` ."
         toprint_rel_dataset['question'] = question
         toadd = "Vulnerability detected, it is classified as " + cat.title().replace("_",
-                                                                                     " ") + " found on line " + indexes + "; due to these instructions ```" + vulns_line + "```"
+                                                                                     " ") + " due to these instructions ```" + vulns_line + "```"
         toprint_rel_dataset['answer'] = toadd
         toprint_dataset.append(toprint_rel_dataset)
         toprint_rel_dataset['question_sug'] = "How can this vulnerability be mitigated?"
